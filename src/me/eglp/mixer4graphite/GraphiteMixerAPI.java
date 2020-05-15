@@ -1,9 +1,9 @@
 package me.eglp.mixer4graphite;
 
-import java.util.concurrent.ExecutionException;
-
 import com.mixer.api.MixerAPI;
 import com.mixer.api.resource.MixerUser;
+import com.mixer.api.resource.channel.MixerChannel;
+import com.mixer.api.services.impl.ChannelsService;
 import com.mixer.api.services.impl.UsersService;
 
 public class GraphiteMixerAPI {
@@ -31,12 +31,28 @@ public class GraphiteMixerAPI {
 		return clientSecret;
 	}
 	
-	public MixerUser searchByName(String name) {
+	public MixerUser getUserByName(String name) {
 		try {
-			return api.use(UsersService.class).search(name).get().stream().findFirst().orElse(null);
-		} catch (InterruptedException e) {
+			MixerUser u = api.use(UsersService.class).search(name).get().stream().findFirst().orElse(null);
+			if(!u.username.equalsIgnoreCase(name)) return null;
+			return u;
+		} catch (Exception e) {
 			return null;
-		} catch (ExecutionException e) {
+		}
+	}
+	
+	public MixerUser getUserByID(int id) {
+		try {
+			return api.use(UsersService.class).findOne(id).get();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public MixerChannel getChannelByID(int id) {
+		try {
+			return api.use(ChannelsService.class).findOne(id).get();
+		} catch (Exception e) {
 			return null;
 		}
 	}
